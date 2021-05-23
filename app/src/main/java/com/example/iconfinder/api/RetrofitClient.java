@@ -1,5 +1,7 @@
 package com.example.iconfinder.api;
 
+import com.example.iconfinder.BuildConfig;
+
 import java.io.IOException;
 
 import okhttp3.Interceptor;
@@ -25,12 +27,12 @@ public class RetrofitClient {
             httpClient.addInterceptor(new Interceptor() {
                 @Override
                 public Response intercept(Chain chain) throws IOException {
-                    Request request = chain.request().newBuilder().addHeader("Authorization", "Bearer dIkBHfKUyVr0ElzeZSwkX4uGk5gKJdz9c9HiwMtGkK320wXLeOQsNXurw7K9Hzmg").build();
+                    Request request = chain.request().newBuilder().addHeader("Authorization", "Bearer "+ BuildConfig.apiKey).build();
                     return chain.proceed(request);
                 }
             });
             retrofit = new Retrofit.Builder()
-                    .baseUrl("https://api.iconfinder.com/v4/")
+                    .baseUrl(BuildConfig.baseUrl)
                     .addConverterFactory(GsonConverterFactory.create())
                     .client(httpClient.build())
                     .build();

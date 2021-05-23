@@ -1,7 +1,10 @@
 package com.example.iconfinder.viewmodel;
 
+import android.util.Log;
+
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
+
 import com.example.iconfinder.repository.CategoryRepository;
 import com.example.iconfinder.responsebody.CategoryResponseModel;
 
@@ -9,13 +12,11 @@ public class CategoryViewModel extends ViewModel {
     private MutableLiveData<CategoryResponseModel> categories;
     private final CategoryRepository categoryRepository;
     private final MutableLiveData<String> categoryIdentifier;
-    public MutableLiveData<Boolean> progressBar;
     private int selectedPosition = 0;
 
     public CategoryViewModel() {
         categoryRepository = new CategoryRepository();
         categoryIdentifier = new MutableLiveData<>("");
-        progressBar = new MutableLiveData<>();
     }
 
     public MutableLiveData<String> getCategoryIdentifier() {
@@ -37,7 +38,7 @@ public class CategoryViewModel extends ViewModel {
     }
 
     private void getCategoriesData() {
+        Log.e("category: ", "category data called");
         this.categories = categoryRepository.getCategories();
-        progressBar.postValue(false);
     }
 }

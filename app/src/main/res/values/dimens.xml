@@ -10,4 +10,6 @@
     <dimen name="icons_margin_top">24dp</dimen>
     <dimen name="icons_margin_bottom">16dp</dimen>
     <dimen name="dimen_8dp">8dp</dimen>
+    <dimen name="icon_margin_top">8dp</dimen>
+
 </resources>
