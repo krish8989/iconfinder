@@ -16,7 +16,6 @@ public class IconViewModel extends AndroidViewModel {
     private final IconRepository iconsRepository;
     private DownloadIconRepository downloadIconRepository;
     private MutableLiveData<IconResponseModel> icons;
-    private String identifier;
     public MutableLiveData<ResponseModel> fileDownloadResponse;
 
     public IconViewModel(@NonNull Application application) {
@@ -26,7 +25,6 @@ public class IconViewModel extends AndroidViewModel {
     }
 
     public MutableLiveData<IconResponseModel> getIcons(String query, String identifier) {
-        this.identifier = identifier;
         getIconsData(query, identifier);
         return icons;
     }

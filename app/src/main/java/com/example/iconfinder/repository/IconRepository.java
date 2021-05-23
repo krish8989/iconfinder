@@ -12,13 +12,14 @@ import retrofit2.Response;
 
 public class IconRepository {
     private final WebServices webServices;
+    private MutableLiveData<IconResponseModel> iconResponseModelMutableLiveData = new MutableLiveData<>();
 
     public IconRepository() {
         webServices = RetrofitClient.getRetrofitClient().create(WebServices.class);
     }
 
     public MutableLiveData<IconResponseModel> getIcons(String query, String identifier) {
-        MutableLiveData<IconResponseModel> iconResponseModelMutableLiveData = new MutableLiveData<>();
+
         webServices.getIcons(query, 20, 0, identifier).enqueue(new Callback<IconResponseModel>() {
             @Override
             public void onResponse(Call<IconResponseModel> call, Response<IconResponseModel> response) {
@@ -31,14 +32,14 @@ public class IconRepository {
                     iconResponseModel.setResponseCode(response.code());
                     iconResponseModel.setResponseMessage(response.message());
                 }
-                iconResponseModelMutableLiveData.postValue(iconResponseModel);
+                iconResponseModelMutableLiveData.setValue(iconResponseModel);
             }
 
             @Override
             public void onFailure(Call<IconResponseModel> call, Throwable t) {
                 IconResponseModel iconResponseModel = new IconResponseModel();
                 iconResponseModel.setThrowable(t);
-                iconResponseModelMutableLiveData.postValue(iconResponseModel);
+                iconResponseModelMutableLiveData.setValue(iconResponseModel);
             }
         });
         return iconResponseModelMutableLiveData;
