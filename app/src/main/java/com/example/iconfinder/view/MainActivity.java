@@ -39,6 +39,7 @@ public class MainActivity extends AppCompatActivity implements
     private CategoryAdapter categoryAdapter;
     private IconsAdapter iconsAdapter;
     private String categoryIdentifier;
+    private ArrayList<CategoryModel> categoryModels;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,29 +48,46 @@ public class MainActivity extends AppCompatActivity implements
         setSupportActionBar(binding.toolbar);
 
         binding.categoryRecyclerView.setLayoutManager(new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false));
+        categoryModels = new ArrayList<>();
         categoryAdapter = new CategoryAdapter();
+        categoryAdapter.setCategoryModels(categoryModels);
         categoryAdapter.setCategoryClickListener(this);
         binding.categoryRecyclerView.setAdapter(categoryAdapter);
 
+
         iconsAdapter = new IconsAdapter();
+
         iconsAdapter.setIconDownloadListener(this);
         binding.iconsRecyclerView.setLayoutManager(new GridLayoutManager(this, getResources().getInteger(R.integer.span_count)));
         binding.iconsRecyclerView.setAdapter(iconsAdapter);
 
         categoryViewModel = new ViewModelProvider(this).get(CategoryViewModel.class);
         iconViewModel = new ViewModelProvider(this).get(IconViewModel.class);
+        binding.categoryRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+            }
 
-        getCategories(100, "");
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+                if (linearLayoutManager != null && linearLayoutManager.findLastCompletelyVisibleItemPosition() == categoryModels.size() - 1) {
+                    getCategories(categoryModels.get(categoryModels.size() - 1).getIdentifier());
+                }
+            }
+        });
+        getCategories("");
         categoryUpdated();
 
     }
-
-
-    private void getCategories(int count, String after) {
+    private void getCategories(String after) {
         binding.progressBar.setVisibility(View.VISIBLE);
-        categoryViewModel.getCategories(count, after).observe(this, new Observer<CategoryResponseModel>() {
+        categoryViewModel.getCategories(after).observe(this, new Observer<CategoryResponseModel>() {
             @Override
             public void onChanged(CategoryResponseModel categoryResponseModel) {
+                binding.progressBar.setVisibility(View.GONE);
                 if (categoryResponseModel != null) {
                     if (categoryResponseModel.getThrowable() != null) {
                         Toast.makeText(MainActivity.this, categoryResponseModel.getThrowable().getMessage(),
@@ -79,6 +97,14 @@ public class MainActivity extends AppCompatActivity implements
                                 Toast.LENGTH_LONG).show();
                     } else {
                         categoryAdapter.setCategoryModels(categoryResponseModel.getCategoryModels());
+                        categoryModels.clear();
+                        categoryModels.addAll(categoryResponseModel.getCategoryModels());
+                        binding.categoryRecyclerView.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                categoryAdapter.notifyDataSetChanged();
+                            }
+                        });
                     }
                 }
             }
@@ -147,7 +173,7 @@ public class MainActivity extends AppCompatActivity implements
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                    getIcons(newText, categoryIdentifier);
+                getIcons(newText, categoryIdentifier);
                 return true;
             }
         });

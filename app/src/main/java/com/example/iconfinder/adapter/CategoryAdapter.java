@@ -29,7 +29,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
 
     public void setCategoryModels(ArrayList<CategoryModel> categoryModels) {
         this.categoryModels = categoryModels;
-        notifyDataSetChanged();
+//        notifyDataSetChanged();
     }
 
     @NonNull

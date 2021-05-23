@@ -27,7 +27,7 @@ public class RetrofitClient {
             httpClient.addInterceptor(new Interceptor() {
                 @Override
                 public Response intercept(Chain chain) throws IOException {
-                    Request request = chain.request().newBuilder().addHeader("Authorization", "Bearer "+ BuildConfig.apiKey).build();
+                    Request request = chain.request().newBuilder().addHeader("Authorization", "Bearer " + BuildConfig.apiKey).build();
                     return chain.proceed(request);
                 }
             });
