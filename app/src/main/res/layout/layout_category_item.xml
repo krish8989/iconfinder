@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="model"
+            type="com.example.iconfinder.data.CategoryModel" />
+    </data>
+
+    <TextView
+        android:id="@+id/categoryTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="16dp"
+        android:background="@{model.selected?@drawable/category_selected:@drawable/category_unselected}"
+        android:fontFamily="@font/lato_bold"
+        android:gravity="center"
+        android:paddingStart="@dimen/dimen_20dp"
+        android:paddingTop="@dimen/category_padding"
+        android:paddingEnd="@dimen/dimen_20dp"
+        android:paddingBottom="@dimen/category_padding"
+        android:text="@{model.name}"
+        android:textColor="@{model.selected? @color/white: @color/light_black}"
+        android:textSize="@dimen/dimen_16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView" />
+</layout>
