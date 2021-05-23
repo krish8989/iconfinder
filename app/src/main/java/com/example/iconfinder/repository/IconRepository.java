@@ -17,9 +17,9 @@ public class IconRepository {
         webServices = RetrofitClient.getRetrofitClient().create(WebServices.class);
     }
 
-    public MutableLiveData<IconResponseModel> getIcons(String identifier) {
+    public MutableLiveData<IconResponseModel> getIcons(String query, String identifier) {
         MutableLiveData<IconResponseModel> iconResponseModelMutableLiveData = new MutableLiveData<>();
-        webServices.getIcons("", 10, 0, identifier).enqueue(new Callback<IconResponseModel>() {
+        webServices.getIcons(query, 20, 0, identifier).enqueue(new Callback<IconResponseModel>() {
             @Override
             public void onResponse(Call<IconResponseModel> call, Response<IconResponseModel> response) {
                 IconResponseModel iconResponseModel;

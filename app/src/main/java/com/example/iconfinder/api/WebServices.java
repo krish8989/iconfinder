@@ -12,7 +12,7 @@ import retrofit2.http.Url;
 
 public interface WebServices {
     @GET("categories")
-    Call<CategoryResponseModel> getCategories();
+    Call<CategoryResponseModel> getCategories(@Query("count") int count, @Query("after")String after);
 
     @GET("icons/search")
     Call<IconResponseModel> getIcons(@Query("query") String query, @Query("count") int count,

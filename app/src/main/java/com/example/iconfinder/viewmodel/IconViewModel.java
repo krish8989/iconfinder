@@ -25,14 +25,14 @@ public class IconViewModel extends AndroidViewModel {
         downloadIconRepository = new DownloadIconRepository(application);
     }
 
-    public MutableLiveData<IconResponseModel> getIcons(String identifier) {
+    public MutableLiveData<IconResponseModel> getIcons(String query, String identifier) {
         this.identifier = identifier;
-        getIcons();
+        getIconsData(query, identifier);
         return icons;
     }
 
-    private void getIcons() {
-        this.icons = iconsRepository.getIcons(identifier);
+    private void getIconsData(String query, String identifier) {
+        this.icons = iconsRepository.getIcons(query, identifier);
     }
 
     public MutableLiveData<ResponseModel> downloadIcon(String url, String iconIdentifier, String format) {

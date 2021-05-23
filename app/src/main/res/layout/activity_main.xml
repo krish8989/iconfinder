@@ -22,7 +22,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 android:background="@color/black"
-                android:theme="@style/ThemeOverlay.AppCompat.Light"
+                android:theme="@style/ActionBarThemeOverlay"
                 app:layout_collapseMode="pin">
 
                 <LinearLayout
@@ -34,23 +34,10 @@
                         android:layout_height="wrap_content"
                         app:srcCompat="@drawable/ic_icon_finder_logo"
                         app:tint="@color/white" />
-                    <!--                    <androidx.appcompat.widget.SearchView-->
-                    <!--                        android:gravity="end"-->
-                    <!--                        android:layout_gravity="end"-->
-                    <!--                        android:layout_width="0dp"-->
-                    <!--                        android:layout_weight="1"-->
-                    <!--                        android:layout_height="wrap_content"-->
-                    <!--                        app:searchIcon="@drawable/ic_search"-->
-                    <!--                        app:closeIcon="@drawable/ic_close_black"-->
-                    <!--   -->
-                    <!--                        />-->
 
                 </LinearLayout>
             </androidx.appcompat.widget.Toolbar>
         </com.google.android.material.appbar.AppBarLayout>
-
-
-
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/categoryRecyclerView"
             android:layout_width="match_parent"

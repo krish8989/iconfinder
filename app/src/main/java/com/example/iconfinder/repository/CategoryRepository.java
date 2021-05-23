@@ -20,9 +20,9 @@ public class CategoryRepository {
         webServices = RetrofitClient.getRetrofitClient().create(WebServices.class);
     }
 
-    public MutableLiveData<CategoryResponseModel> getCategories() {
+    public MutableLiveData<CategoryResponseModel> getCategories(int count, String after) {
         MutableLiveData<CategoryResponseModel> mutableLiveData = new MutableLiveData<>();
-        webServices.getCategories().enqueue(new Callback<CategoryResponseModel>() {
+        webServices.getCategories(count, "").enqueue(new Callback<CategoryResponseModel>() {
             @Override
             public void onResponse(Call<CategoryResponseModel> call, Response<CategoryResponseModel> response) {
                 CategoryResponseModel categoryResponseModel;

@@ -1,6 +1,8 @@
 package com.example.iconfinder.view;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -10,12 +12,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
 import android.view.View;
 import android.widget.Toast;
 
 import com.example.iconfinder.R;
 import com.example.iconfinder.adapter.CategoryAdapter;
 import com.example.iconfinder.adapter.IconsAdapter;
+import com.example.iconfinder.data.CategoryModel;
 import com.example.iconfinder.databinding.ActivityMainBinding;
 import com.example.iconfinder.listener.CategoryClickListener;
 import com.example.iconfinder.listener.IconDownloadListener;
@@ -25,17 +29,22 @@ import com.example.iconfinder.responsebody.ResponseModel;
 import com.example.iconfinder.viewmodel.CategoryViewModel;
 import com.example.iconfinder.viewmodel.IconViewModel;
 
-public class MainActivity extends AppCompatActivity implements CategoryClickListener, IconDownloadListener {
+import java.util.ArrayList;
+
+public class MainActivity extends AppCompatActivity implements
+        CategoryClickListener, IconDownloadListener {
     private ActivityMainBinding binding;
     private CategoryViewModel categoryViewModel;
     private IconViewModel iconViewModel;
     private CategoryAdapter categoryAdapter;
     private IconsAdapter iconsAdapter;
+    private String categoryIdentifier;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
+        setSupportActionBar(binding.toolbar);
 
         binding.categoryRecyclerView.setLayoutManager(new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false));
         categoryAdapter = new CategoryAdapter();
@@ -44,22 +53,21 @@ public class MainActivity extends AppCompatActivity implements CategoryClickList
 
         iconsAdapter = new IconsAdapter();
         iconsAdapter.setIconDownloadListener(this);
-        int spanCount = getResources().getInteger(R.integer.span_count);
-        binding.iconsRecyclerView.setLayoutManager(new GridLayoutManager(this, spanCount));
+        binding.iconsRecyclerView.setLayoutManager(new GridLayoutManager(this, getResources().getInteger(R.integer.span_count)));
         binding.iconsRecyclerView.setAdapter(iconsAdapter);
 
         categoryViewModel = new ViewModelProvider(this).get(CategoryViewModel.class);
         iconViewModel = new ViewModelProvider(this).get(IconViewModel.class);
 
-
-        getCategories();
+        getCategories(100, "");
         categoryUpdated();
+
     }
 
 
-    private void getCategories() {
+    private void getCategories(int count, String after) {
         binding.progressBar.setVisibility(View.VISIBLE);
-        categoryViewModel.getCategories().observe(this, new Observer<CategoryResponseModel>() {
+        categoryViewModel.getCategories(count, after).observe(this, new Observer<CategoryResponseModel>() {
             @Override
             public void onChanged(CategoryResponseModel categoryResponseModel) {
                 if (categoryResponseModel != null) {
@@ -72,7 +80,6 @@ public class MainActivity extends AppCompatActivity implements CategoryClickList
                     } else {
                         categoryAdapter.setCategoryModels(categoryResponseModel.getCategoryModels());
                     }
-
                 }
             }
         });
@@ -83,7 +90,8 @@ public class MainActivity extends AppCompatActivity implements CategoryClickList
         categoryViewModel.getCategoryIdentifier().observe(this, new Observer<String>() {
             @Override
             public void onChanged(String s) {
-                getIcons(s);
+                categoryIdentifier = s;
+                getIcons("", s);
             }
         });
     }
@@ -94,9 +102,9 @@ public class MainActivity extends AppCompatActivity implements CategoryClickList
         categoryViewModel.updateSelected(position);
     }
 
-    private void getIcons(String categoryIdentifier) {
+    private void getIcons(String query, String categoryIdentifier) {
         binding.progressBar.setVisibility(View.VISIBLE);
-        iconViewModel.getIcons(categoryIdentifier).observe(this, new Observer<IconResponseModel>() {
+        iconViewModel.getIcons(query, categoryIdentifier).observe(this, new Observer<IconResponseModel>() {
             @Override
             public void onChanged(IconResponseModel iconResponseModel) {
                 binding.progressBar.setVisibility(View.GONE);
@@ -123,5 +131,33 @@ public class MainActivity extends AppCompatActivity implements CategoryClickList
                 binding.progressBar.setVisibility(View.GONE);
             }
         });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main_activity, menu);
+        SearchView searchView =
+                (SearchView) menu.findItem(R.id.search).getActionView();
+        searchView.setQueryHint("Find Icons Here");
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                    getIcons(newText, categoryIdentifier);
+                return true;
+            }
+        });
+        searchView.setOnCloseListener(new SearchView.OnCloseListener() {
+            @Override
+            public boolean onClose() {
+                getIcons("", categoryIdentifier);
+                return true;
+            }
+        });
+        return super.onCreateOptionsMenu(menu);
     }
 }

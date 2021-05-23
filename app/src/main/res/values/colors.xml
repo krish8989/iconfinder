@@ -13,5 +13,5 @@
     <color name="selected">#9C3C9C15</color>
     <color name="price">#3FA317</color>
     <color name="un_selected">#6FB7B8B7</color>
-
+    <color name="off_white">#92FFFFFF</color>
 </resources>
