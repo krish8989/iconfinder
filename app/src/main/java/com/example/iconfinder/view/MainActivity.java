@@ -39,7 +39,9 @@ public class MainActivity extends AppCompatActivity implements
     private CategoryAdapter categoryAdapter;
     private IconsAdapter iconsAdapter;
     private String categoryIdentifier;
-    private ArrayList<CategoryModel> categoryModels;
+    private String lastIdentifier;
+    private int categorySize;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,9 +50,8 @@ public class MainActivity extends AppCompatActivity implements
         setSupportActionBar(binding.toolbar);
 
         binding.categoryRecyclerView.setLayoutManager(new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false));
-        categoryModels = new ArrayList<>();
+
         categoryAdapter = new CategoryAdapter();
-        categoryAdapter.setCategoryModels(categoryModels);
         categoryAdapter.setCategoryClickListener(this);
         binding.categoryRecyclerView.setAdapter(categoryAdapter);
 
@@ -63,6 +64,13 @@ public class MainActivity extends AppCompatActivity implements
 
         categoryViewModel = new ViewModelProvider(this).get(CategoryViewModel.class);
         iconViewModel = new ViewModelProvider(this).get(IconViewModel.class);
+        setCategoryRecyclerViewPagination();
+        getCategories("");
+        categoryUpdated();
+
+    }
+
+    private void setCategoryRecyclerViewPagination() {
         binding.categoryRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
@@ -73,15 +81,13 @@ public class MainActivity extends AppCompatActivity implements
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
                 LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
-                if (linearLayoutManager != null && linearLayoutManager.findLastCompletelyVisibleItemPosition() == categoryModels.size() - 1) {
-                    getCategories(categoryModels.get(categoryModels.size() - 1).getIdentifier());
+                if (linearLayoutManager != null && linearLayoutManager.findLastCompletelyVisibleItemPosition() == categorySize) {
+                    getCategories(lastIdentifier);
                 }
             }
         });
-        getCategories("");
-        categoryUpdated();
-
     }
+
     private void getCategories(String after) {
         binding.progressBar.setVisibility(View.VISIBLE);
         categoryViewModel.getCategories(after).observe(this, new Observer<CategoryResponseModel>() {
@@ -97,14 +103,14 @@ public class MainActivity extends AppCompatActivity implements
                                 Toast.LENGTH_LONG).show();
                     } else {
                         categoryAdapter.setCategoryModels(categoryResponseModel.getCategoryModels());
-                        categoryModels.clear();
-                        categoryModels.addAll(categoryResponseModel.getCategoryModels());
                         binding.categoryRecyclerView.post(new Runnable() {
                             @Override
                             public void run() {
                                 categoryAdapter.notifyDataSetChanged();
                             }
                         });
+                        categorySize = categoryResponseModel.getCategoryModels().size() - 1;
+                        lastIdentifier = categoryResponseModel.getCategoryModels().get(categorySize).getIdentifier();
                     }
                 }
             }
