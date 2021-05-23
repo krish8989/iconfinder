@@ -38,7 +38,6 @@ public class CategoryViewModel extends ViewModel {
     }
 
     private void getCategoriesData() {
-        Log.e("category: ", "category data called");
         this.categories = categoryRepository.getCategories();
     }
 }
