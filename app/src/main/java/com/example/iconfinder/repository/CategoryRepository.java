@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.example.iconfinder.api.RetrofitClient;
 import com.example.iconfinder.api.WebServices;
+import com.example.iconfinder.data.CategoryModel;
 import com.example.iconfinder.responsebody.CategoryResponseModel;
 
 import retrofit2.Call;
@@ -26,6 +27,11 @@ public class CategoryRepository {
                 if (response.isSuccessful()) {
                     categoryResponseModel = response.body();
                     categoryResponseModel.setResponseCode(200);
+                    CategoryModel categoryModel = new CategoryModel();
+                    categoryModel.setIdentifier("");
+                    categoryModel.setSelected(true);
+                    categoryModel.setName("All");
+                    categoryResponseModel.getCategoryModels().add(0, categoryModel);
                 } else {
                     categoryResponseModel = new CategoryResponseModel();
                     categoryResponseModel.setResponseCode(response.code());
