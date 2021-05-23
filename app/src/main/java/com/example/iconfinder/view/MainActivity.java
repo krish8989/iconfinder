@@ -18,7 +18,6 @@ import android.widget.Toast;
 import com.example.iconfinder.R;
 import com.example.iconfinder.adapter.CategoryAdapter;
 import com.example.iconfinder.adapter.IconsAdapter;
-import com.example.iconfinder.data.CategoryModel;
 import com.example.iconfinder.databinding.ActivityMainBinding;
 import com.example.iconfinder.listener.CategoryClickListener;
 import com.example.iconfinder.listener.IconDownloadListener;
@@ -28,7 +27,6 @@ import com.example.iconfinder.responsebody.ResponseModel;
 import com.example.iconfinder.viewmodel.CategoryViewModel;
 import com.example.iconfinder.viewmodel.IconViewModel;
 
-import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements
         CategoryClickListener, IconDownloadListener {

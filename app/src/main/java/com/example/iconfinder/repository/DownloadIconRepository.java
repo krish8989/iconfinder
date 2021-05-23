@@ -23,6 +23,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Calendar;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -33,7 +34,7 @@ import retrofit2.Response;
 public class DownloadIconRepository {
     private Application application;
     private WebServices webServices;
-    private MutableLiveData<ResponseModel> responseModelMutableLiveData;
+    private final MutableLiveData<ResponseModel> responseModelMutableLiveData = new MutableLiveData<>();
 
     public DownloadIconRepository(Application application) {
         this.application = application;
@@ -41,7 +42,6 @@ public class DownloadIconRepository {
     }
 
     public MutableLiveData<ResponseModel> downloadFile(String uri, String iconIdentifier, String format) {
-        responseModelMutableLiveData = new MutableLiveData<>();
         ResponseModel responseModel = new ResponseModel();
         webServices.downloadFileWithDynamicUrlSync(uri).enqueue(new Callback<ResponseBody>() {
             @Override
@@ -66,13 +66,13 @@ public class DownloadIconRepository {
     }
 
     private void saveFile(ResponseBody body, String iconIdentifier, String format) {
-        Handler handler = new Handler(Looper.getMainLooper());
         ResponseModel responseModel = new ResponseModel();
         Runnable r = new Runnable() {
             @Override
             public void run() {
                 final ContentValues values = new ContentValues();
-                values.put(MediaStore.MediaColumns.DISPLAY_NAME, iconIdentifier.concat(".").concat(format));
+                values.put(MediaStore.MediaColumns.DISPLAY_NAME, iconIdentifier.
+                        concat(Calendar.getInstance().getTimeInMillis() + "").concat(".").concat(format));
                 values.put(MediaStore.MediaColumns.MIME_TYPE, "image/*");
                 values.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DCIM);
 
@@ -108,11 +108,7 @@ public class DownloadIconRepository {
                     responseModel.setResponseCode(400);
                     responseModel.setResponseMessage("Failed to download icon");
                 }
-                handler.post(new Runnable() {
-                    public void run() {
-                        responseModelMutableLiveData.setValue(responseModel);
-                    }
-                });
+                responseModelMutableLiveData.postValue(responseModel);
             }
         };
         Thread t = new Thread(r);

@@ -1,7 +1,5 @@
 package com.example.iconfinder.repository;
 
-import android.util.Log;
-
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.iconfinder.api.RetrofitClient;
@@ -22,18 +20,11 @@ public class CategoryRepository {
     }
 
     public MutableLiveData<CategoryResponseModel> getCategories(String after) {
-        if (mutableLiveData.getValue() == null) {
-            Log.e("livadata: ", "live data null");
-        } else {
-            Log.e("live data: ", "not null");
-        }
-        webServices.getCategories( after).enqueue(new Callback<CategoryResponseModel>() {
+        webServices.getCategories(after).enqueue(new Callback<CategoryResponseModel>() {
             @Override
             public void onResponse(Call<CategoryResponseModel> call, Response<CategoryResponseModel> response) {
-//                CategoryResponseModel categoryResponseModel;
                 if (response.isSuccessful()) {
                     CategoryResponseModel categoryResponseModel = response.body();
-
                     if (mutableLiveData.getValue() == null) {
                         categoryResponseModel.setResponseCode(200);
                         CategoryModel categoryModel = new CategoryModel();
@@ -44,7 +35,8 @@ public class CategoryRepository {
                         mutableLiveData.setValue(categoryResponseModel);
                     } else {
                         CategoryResponseModel categoryResponseModel1 = mutableLiveData.getValue();
-                        categoryResponseModel1.getCategoryModels().addAll(categoryResponseModel1.getCategoryModels().size(), categoryResponseModel.getCategoryModels());
+                        categoryResponseModel1.getCategoryModels().addAll(categoryResponseModel1.getCategoryModels().size(),
+                                categoryResponseModel.getCategoryModels());
                         mutableLiveData.setValue(categoryResponseModel1);
                     }
                 } else {

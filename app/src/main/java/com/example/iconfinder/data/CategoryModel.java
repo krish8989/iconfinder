@@ -1,7 +1,5 @@
 package com.example.iconfinder.data;
 
-import android.util.Log;
-
 public class CategoryModel {
     private String identifier;
     private String name;
