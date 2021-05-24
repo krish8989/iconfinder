@@ -10,7 +10,10 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.Manifest;
+import android.os.Build;
 import android.os.Bundle;
+import android.system.Os;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Toast;
@@ -27,9 +30,13 @@ import com.example.iconfinder.responsebody.ResponseModel;
 import com.example.iconfinder.viewmodel.CategoryViewModel;
 import com.example.iconfinder.viewmodel.IconViewModel;
 
+import pub.devrel.easypermissions.AfterPermissionGranted;
+import pub.devrel.easypermissions.EasyPermissions;
+
 
 public class MainActivity extends AppCompatActivity implements
         CategoryClickListener, IconDownloadListener {
+    private static final int RC_WRITE_STORAGE = 1;
     private ActivityMainBinding binding;
     private CategoryViewModel categoryViewModel;
     private IconViewModel iconViewModel;
@@ -38,6 +45,9 @@ public class MainActivity extends AppCompatActivity implements
     private String categoryIdentifier;
     private String lastIdentifier;
     private int categorySize;
+    private String downloadPath;
+    private String iconIdentifier;
+    private String iconFormat;
 
 
     @Override
@@ -152,8 +162,20 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void downloadIcon(String path, String iconIdentifier, String format) {
+        this.downloadPath = path;
+        this.iconIdentifier = iconIdentifier;
+        this.iconFormat = format;
+        if (Build.VERSION.SDK_INT < 29) {
+            requestWritePermission();
+        } else {
+            download();
+        }
+
+    }
+
+    public void download() {
         binding.progressBar.setVisibility(View.VISIBLE);
-        iconViewModel.downloadIcon(path, iconIdentifier, format).observe(MainActivity.this, new Observer<ResponseModel>() {
+        iconViewModel.downloadIcon(downloadPath, iconIdentifier, iconFormat).observe(MainActivity.this, new Observer<ResponseModel>() {
             @Override
             public void onChanged(ResponseModel responseModel) {
                 Toast.makeText(MainActivity.this, responseModel.getResponseMessage(), Toast.LENGTH_LONG).show();
@@ -188,5 +210,22 @@ public class MainActivity extends AppCompatActivity implements
             }
         });
         return super.onCreateOptionsMenu(menu);
+    }
+
+    @AfterPermissionGranted(RC_WRITE_STORAGE)
+    private void requestWritePermission() {
+        String[] perms = {Manifest.permission.WRITE_EXTERNAL_STORAGE};
+        if (EasyPermissions.hasPermissions(this, perms)) {
+            download();
+        } else {
+            EasyPermissions.requestPermissions(this, getString(R.string.write_permission_rationale),
+                    RC_WRITE_STORAGE, perms);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
     }
 }

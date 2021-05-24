@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
@@ -74,8 +75,9 @@ public class DownloadIconRepository {
                 values.put(MediaStore.MediaColumns.DISPLAY_NAME, iconIdentifier.
                         concat(Calendar.getInstance().getTimeInMillis() + "").concat(".").concat(format));
                 values.put(MediaStore.MediaColumns.MIME_TYPE, "image/*");
-                values.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DCIM);
-
+                if (Build.VERSION.SDK_INT >= 29) {
+                    values.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DCIM);
+                }
                 final ContentResolver resolver = application.getApplicationContext().getContentResolver();
 
                 try {

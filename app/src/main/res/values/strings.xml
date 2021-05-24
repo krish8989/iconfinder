@@ -2,4 +2,5 @@
     <string name="app_name">Icon Finder</string>
     <integer name="span_count">2</integer>
     <string name="search_hint">Find Icons Here</string>
+    <string name="write_permission_rationale">Need write permission to download fle</string>
 </resources>
